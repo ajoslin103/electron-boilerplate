@@ -13,6 +13,8 @@ import jetpack from "fs-jetpack";
 import { greet } from "./hello_world/hello_world";
 import env from "env";
 
+import * as Ably from 'ably'
+
 const app = remote.app;
 const appDir = jetpack.cwd(app.getAppPath());
 
@@ -31,5 +33,14 @@ document.querySelector("#greet").innerHTML = greet();
 document.querySelector("#os").innerHTML = osMap[process.platform];
 document.querySelector("#author").innerHTML = manifest.author;
 document.querySelector("#env").innerHTML = env.name;
-document.querySelector("#electron-version").innerHTML =
-  process.versions.electron;
+document.querySelector("#electron-version").innerHTML = process.versions.electron;
+
+const ablyKey = env.ably;
+
+const ablyInstance = new Ably.Realtime({ key: ablyKey, autoConnect: true });
+ablyInstance.connection
+  .on('connected', data => console.log('Connected to Ably, data:', data));
+
+const testChannel = ablyInstance.channels.get('test');
+testChannel.subscribe('ping', payload => console.log('payload', JSON.stringify(payload)));
+setInterval(() => testChannel.publish('ping', { epoc: new Date().getTime() }), 4000);

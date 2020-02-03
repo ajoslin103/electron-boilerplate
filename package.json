@@ -31,6 +31,7 @@
     "release": "npm test && webpack --config=build/webpack.app.config.js --env=production && electron-builder"
   },
   "dependencies": {
+    "ably": "^1.1.24",
     "fs-jetpack": "^2.1.0"
   },
   "devDependencies": {
